@@ -7,12 +7,12 @@ import os
 import pandas as pd
 
 from sklearn.linear_model import LogisticRegression
-
+import mlflow
 
 # define functions
 def main(args):
     # TO DO: enable autologging
-
+    mlflow.sklearn.autolog()
 
     # read data
     df = get_csvs_df(args.training_data)
@@ -33,7 +33,15 @@ def get_csvs_df(path):
     return pd.concat((pd.read_csv(f) for f in csv_files), sort=False)
 
 
-# TO DO: add function to split data
+def split_data(df):
+    X = df.drop("Diabetic", axis=1)
+    y = df["Diabetic"]
+    split_index = int(0.8 * len(df))
+    X_train = X[:split_index]
+    X_test = X[split_index:]
+    y_train = y[:split_index]
+    y_test = y[split_index:]
+    return X_train, X_test, y_train, y_test
 
 
 def train_model(reg_rate, X_train, X_test, y_train, y_test):
